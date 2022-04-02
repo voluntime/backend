@@ -8,6 +8,11 @@ SELECT * FROM FULL_POST WHERE ID = $1;
 select *, exists(select 1 from full_post join post_like l on id = l.post where id = $1, l.volunteer = $2) as like, exists(select 1 from full_post join volunteered v on id = v.post where id = $1, v.volunteer = $2) as volunteered from full_post p where p.id = $1;
 
 
+<<<<<<< HEAD
+=======
+    -- on a specific DAY
+    select *, exists(select 1 from full_post join post_like l on id = l.post where id = $1 and l.volunteer = $2) as like, exists(select 1 from full_post join volunteered v on id = v.post where id = $1 and v.volunteer = $2) as volunteered from full_post p where p.begins::date = date $3;
+>>>>>>> 3c3dc165e30534fe808b4dac64b3d1c8bb14f79a
 
 -- -- Get all events:
 -- select *, TRUE as like from full_post fp

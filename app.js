@@ -3,11 +3,13 @@ const fs = require("fs");
 const express = require("express");
 const session = require("express-session");
 const MemoryStore = require("memorystore")(session);
+const PgSimple = require("connect-pg-simple")(session);
 
 const { pool } = require("./src/db");
 const { authenticated } = require("./src/middleware");
 const auth = require("./src/auth");
 const interaction = require("./src/interaction");
+const post = require("./src/post");
 const user = require("./src/user");
 
 
@@ -19,7 +21,10 @@ app.use(express.json());
 app.use(session({
     secret: "voluntime",
     name: "sess_id",
-    store: new MemoryStore({ checkPeriod: 86400000 }), // prune after 24hr
+    store: new PgSimple({
+        pool,
+        createTableIfMissing: true
+    }),
     cookie: { maxAge: 86400000 }, // cookie expires in 24hr
     saveUninitialized: false,
     resave: false
@@ -29,14 +34,17 @@ app.use(session({
 app.get("/v1/users", user.getAllUsers);
 app.get("/v1/user/:username", user.getUser);
 
+// Post routes
+app.get("/v1/posts", authenticated, post.getAllPostsWithFilters);
+
 // Interaction routes
-app.post("/v1/interaction/like", interaction.likePost);
-app.post("/v1/interaction/volunteer", interaction.volunteer);
+app.post("/v1/interaction/like", authenticated, interaction.likePost);
+app.post("/v1/interaction/volunteer", authenticated, interaction.volunteer);
 
 // Auth routes
 app.post("/v1/login", auth.login);
 app.post("/v1/signup", auth.signup);
-app.post("/v1/logout", auth.signup);
+app.post("/v1/logout", authenticated, auth.signup);
 
 // TEST - session route
 app.get("/session", (req, res) => {
@@ -52,7 +60,7 @@ app.get("/session", (req, res) => {
 // Global err catchall
 app.use((err, req, res, next) => {
     res.status(err.code || 500).send({
-        err: err.reason || "No reason given"
+        err: err.reason || err.toString()
     })
 });
 

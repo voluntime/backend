@@ -66,7 +66,7 @@ app.get("/session", (req, res, next) => {
 
 // Global err catchall
 app.use((err, req, res, next) => {
-    res.status(err.code || 500).send({
+    res.status(500).json({
         err: err.reason || err.toString()
     })
 });

@@ -3,6 +3,7 @@ const session = require("express-session");
 const MemoryStore = require("memorystore")(session);
 
 const { pool } = require("./src/db");
+const { authenticated } = require("./src/middleware");
 const user = require("./src/user");
 const fs = require("fs");
 
@@ -19,6 +20,7 @@ app.use(session({
     resave: false
 }));
 
+
 app.get("/v1/users", user.getAllUsers);
 app.get("/v1/user/:username", user.getUser);
 
@@ -30,6 +32,13 @@ app.get("/session", (req, res) => {
         req.session.views = 1;
         res.send(req.session);
     }
+});
+
+// Global err catchall
+app.use((err, req, res, next) => {
+    res.status(err.code || 500).send({
+        err: err.reason || "No reason given"
+    })
 });
 
 // Ensure all tables are loaded

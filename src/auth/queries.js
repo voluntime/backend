@@ -33,7 +33,8 @@ module.exports.login = (req, res) => {
             };
 
             res.json({
-                success: true
+                success: true,
+                'username': req.session.user
             })
         }
     });

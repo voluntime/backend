@@ -35,7 +35,9 @@ app.get("/v1/users", user.getAllUsers);
 app.get("/v1/user/:username", user.getUser);
 
 // Post routes
-app.get("/v1/posts", authenticated, post.getAllPostsWithFilters);
+app.get("/v1/posts", authenticated, post.getAllPosts);
+app.post("/v1/post", authenticated, post.createPost);
+app.delete("/v1/post", authenticated, post.deletePost);
 
 // Interaction routes
 app.post("/v1/interaction/like", authenticated, interaction.likePost);

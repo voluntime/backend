@@ -5,7 +5,7 @@ const { pool } = require("../db");
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.getAllPostsWithFilters = (req, res) => {
+module.exports.getAllPosts = (req, res) => {
     const {
         date,
         eventType,
@@ -16,7 +16,7 @@ module.exports.getAllPostsWithFilters = (req, res) => {
     let params = [req.session.user.username];
 
     if (date) {
-        filters.push("p.begins::date = date $");
+        filters.push("p.begins::date = $");
         params.push(date);
     }
 
@@ -26,20 +26,28 @@ module.exports.getAllPostsWithFilters = (req, res) => {
     }
 
     if (duration) {
-        filters.push("p.ends - p.begins <= INTERVAL $");
+        filters.push("p.ends - p.begins <= $");
         params.push(duration);
     }
 
     for (const i in filters) {
-        const id = (parseInt(i) + params.length - 1)
+        const id = parseInt(i) + 2;
         filters[i] += id;
     }
 
+    filters.push("p.begins > now()");
+
     const filterQuery = filters.join(" and ");
 
-    const dateFilterQuery = "select *, exists(select 1 from full_post join post_like l on id = l.post where id = $1 and l.volunteer = $2) as like, exists(select 1 from full_post join volunteered v on id = v.post where id = $1 and v.volunteer = $2) as volunteered from full_post p where p.begins::date = date $3;";
+    const bigBoiQuery = "select p.*, v.volunteered, l.liked from ( select id, TRUE as liked from full_post fp where exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) union select id, FALSE as liked from full_post fp where not exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) ) l join ( select id, TRUE as volunteered from full_post fp where exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) union select id, FALSE as volunteered from full_post fp where not exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) ) v on l.id = v.id join full_post p on l.id = p.id";
 
-    res.send({ TODO: true });
+    const query = bigBoiQuery + " where " +  filterQuery;
+
+    pool.query(query, params, (err, result) => {
+        if (err) throw err;
+
+        res.send(result.rows);
+    });
 };
 
 
@@ -50,3 +58,67 @@ module.exports.getAllPostsWithFilters = (req, res) => {
 module.exports.getPostById = (req, res) => {
     res.send({ TODO: true });
 };
+
+
+/**
+ * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
+ * @param res {Response<ResBody, Locals>}
+ */
+module.exports.createPost = (req, res) => {
+    let {
+        organization,
+        title,
+        body,
+        eventLocation,
+        eventType,
+        volunteerGoal,
+        beginsAt,
+        endsAt
+    } = req.body;
+
+    let createdAt = new Date();
+
+    organization = organization ? organization : null;
+
+    let params = [
+        createdAt,
+        beginsAt,
+        endsAt,
+        req.session.user.username,
+        organization,
+        title,
+        body,
+        eventLocation,
+        eventType,
+        volunteerGoal
+    ];
+
+    pool.query("INSERT INTO POST(created, begins, ends, organizer, organization, title, body, event_location, event_type, goal) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *", params, (err, result) => {
+        if (err) throw err;
+
+        if (result.rowCount !== 1) {
+            return res.status(500).json({
+                err: "Problem adding post"
+            });
+        }
+
+        return res.status(201).json(result.rows[0]);
+    });
+};
+
+
+/**
+ * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
+ * @param res {Response<ResBody, Locals>}
+ */
+module.exports.deletePost = (req, res) => {
+    const { id } = req.body;
+
+    pool.query("DELETE FROM POST WHERE ID = $1", [id], (err, result) => {
+       if (err) throw err;
+
+       res.send({
+           success: true
+       });
+    });
+}

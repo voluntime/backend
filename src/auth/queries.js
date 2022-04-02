@@ -70,8 +70,6 @@ module.exports.signup = async (req, res) => {
     req.body.organization = req.body.organization || null;
     req.body.password = await bcrypt.hash(password, saltRounds);
 
-    console.log(Object.values(req.body))
-
     const cb = (err, result) => {
         if (err) throw err;
         delete req.body.password;

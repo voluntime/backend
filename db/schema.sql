@@ -54,5 +54,17 @@ create table if not exists volunteered(
     primary key (volunteer, post)
 );
 
+-- Event type 'Enum'
+create table if not exists event_type(
+    event_type      text,
+
+    primary key(event_type)
+);
+
+-- Insert enumerated types
+insert into event_type values('Service');
+insert into event_type values('Good');
+
+
 drop view if exists full_post;
 create view full_post as select p.*, o.name, o.verified, count(v.volunteer) volunteers, count(l.volunteer) likes from post p join volunteer o on o.username = p.organizer left join volunteered v on v.post = p.id left join post_like l on l.post = p.id group by p.id, o.username;

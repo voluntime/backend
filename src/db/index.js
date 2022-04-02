@@ -5,6 +5,7 @@ const connectionString =
 
 const dbPool = new Pool({
     connectionString,
+    ssl: !!process.env.DATABASE_URL
 });
 
 module.exports.pool = dbPool;

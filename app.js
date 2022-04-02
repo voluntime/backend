@@ -6,8 +6,9 @@ const MemoryStore = require("memorystore")(session);
 
 const { pool } = require("./src/db");
 const { authenticated } = require("./src/middleware");
-const user = require("./src/user");
 const auth = require("./src/auth");
+const interaction = require("./src/interaction");
+const user = require("./src/user");
 
 
 const initSql = fs.readFileSync("./db/schema.sql").toString();
@@ -27,6 +28,10 @@ app.use(session({
 // User routes
 app.get("/v1/users", user.getAllUsers);
 app.get("/v1/user/:username", user.getUser);
+
+// Interaction routes
+app.post("/v1/interaction/like", interaction.likePost);
+app.post("/v1/interaction/volunteer", interaction.volunteer);
 
 // Auth routes
 app.post("/v1/login", auth.login);

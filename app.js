@@ -73,7 +73,7 @@ app.use((err, req, res, next) => {
 
 // Ensure all tables are loaded
 pool.query(initSql, (err, res) => {
-    if (err) next(err);
+    if (err) return next(err);
 
     app.listen(port, () => {
         console.log("Listening on port " + port);

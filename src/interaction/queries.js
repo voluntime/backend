@@ -7,12 +7,12 @@ const interaction = (req, res, interactionTable) => {
     // Check if they liked it
     pool.query(`SELECT * FROM ${interactionTable} WHERE VOLUNTEER = $1 AND POST = $2`, [req.session.user.username, id], (err, result) => {
 
-        if (err) next(err);
+        if (err) return next(err);
 
         if (result.rows.length === 0) {
             // They need to like it
             pool.query(`INSERT INTO ${interactionTable} VALUES ($1, $2)`, [req.session.user.username, id], (err, result) => {
-                if (err) next(err);
+                if (err) return next(err);
 
                 // Good to go
                 res.status(202).json({
@@ -22,7 +22,7 @@ const interaction = (req, res, interactionTable) => {
         } else {
             // They don't wanna like it anymore
             pool.query(`DELETE FROM ${interactionTable} WHERE VOLUNTEER = $1 AND POST = $2`, [req.session.user.username, id], (err, result) => {
-                if (err) next(err);
+                if (err) return next(err);
 
                 // Good to go
                 res.status(202).json({

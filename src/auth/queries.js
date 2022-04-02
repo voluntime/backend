@@ -11,7 +11,7 @@ module.exports.login = (req, res, next) => {
     const { username, password } = req.body;
 
     pool.query("SELECT PASSWORD FROM VOLUNTEER WHERE USERNAME = $1", [username], async (err, result) => {
-        if (err) next(err);
+        if (err) return next(err);
 
         if (result.rows.length !== 1) {
             return res.status(401).json({
@@ -71,7 +71,7 @@ module.exports.signup = async (req, res, next) => {
     req.body.password = await bcrypt.hash(password, saltRounds);
 
     const cb = (err, result) => {
-        if (err) next(err);
+        if (err) return next(err);
         delete req.body.password;
         res.status(201).json(req.body);
     };

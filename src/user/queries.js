@@ -7,7 +7,7 @@ const {pool} = require("../db");
  */
 module.exports.getAllUsers = (req, res, next) => {
     pool.query("SELECT * FROM VOLUNTEER", (err, result) => {
-        if (err) next(err);
+        if (err) return next(err);
         res.send(result.rows);
     });
 };
@@ -21,7 +21,7 @@ module.exports.getUser = (req, res, next) => {
     const username = req.params.username || "";
 
     pool.query("SELECT * FROM VOLUNTEER WHERE USERNAME = $1", [username], (err, result) => {
-        if (err) next(err);
+        if (err) return next(err);
 
         if (result.rows.length === 0) {
             return res.status(404).json({

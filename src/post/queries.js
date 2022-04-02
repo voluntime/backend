@@ -44,7 +44,7 @@ module.exports.getAllPosts = (req, res, next) => {
     const query = bigBoiQuery + " where " +  filterQuery;
 
     pool.query(query, params, (err, result) => {
-        if (err) next(err);
+        if (err) return next(err);
 
         res.send(result.rows);
     });
@@ -94,7 +94,7 @@ module.exports.createPost = (req, res, next) => {
     ];
 
     pool.query("INSERT INTO POST(created, begins, ends, organizer, organization, title, body, event_location, event_type, goal) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *", params, (err, result) => {
-        if (err) next(err);
+        if (err) return next(err);
 
         if (result.rowCount !== 1) {
             return res.status(500).json({
@@ -115,7 +115,7 @@ module.exports.deletePost = (req, res, next) => {
     const { id } = req.body;
 
     pool.query("DELETE FROM POST WHERE ID = $1", [id], (err, result) => {
-       if (err) next(err);
+       if (err) return next(err);
 
        res.send({
            success: true

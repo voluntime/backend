@@ -1,4 +1,4 @@
-package me.vontime.backend;
+package me.voluntime.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

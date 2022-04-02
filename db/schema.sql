@@ -67,4 +67,4 @@ insert into event_type values('Good') on conflict do nothing;
 
 
 drop view if exists full_post;
-create view full_post as select p.*, o.name, o.verified, count(v.volunteer) volunteers, count(l.volunteer) likes from post p join volunteer o on o.username = p.organizer left join volunteered v on v.post = p.id left join post_like l on l.post = p.id group by p.id, o.username;
+create view full_post as select p.*, o.name, o.verified, count(v.volunteer)::int volunteers, count(l.volunteer)::int likes from post p join volunteer o on o.username = p.organizer left join volunteered v on v.post = p.id left join post_like l on l.post = p.id group by p.id, o.username;

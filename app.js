@@ -1,3 +1,5 @@
+// Voluntime app
+const fs = require("fs");
 const express = require("express");
 const session = require("express-session");
 const MemoryStore = require("memorystore")(session);
@@ -5,12 +7,14 @@ const MemoryStore = require("memorystore")(session);
 const { pool } = require("./src/db");
 const { authenticated } = require("./src/middleware");
 const user = require("./src/user");
-const fs = require("fs");
+const auth = require("./src/auth");
+
 
 const initSql = fs.readFileSync("./db/schema.sql").toString();
 const port = process.env.PORT || 8080;
 const app = express();
 
+app.use(express.json());
 app.use(session({
     secret: "voluntime",
     name: "sess_id",
@@ -20,10 +24,14 @@ app.use(session({
     resave: false
 }));
 
-
+// User routes
 app.get("/v1/users", user.getAllUsers);
 app.get("/v1/user/:username", user.getUser);
 
+// Auth routes
+app.post("/v1/login", auth.login);
+
+// TEST - session route
 app.get("/session", (req, res) => {
     if (req.session.views) {
        req.session.views++;

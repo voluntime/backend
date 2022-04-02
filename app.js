@@ -30,6 +30,8 @@ app.get("/v1/user/:username", user.getUser);
 
 // Auth routes
 app.post("/v1/login", auth.login);
+app.post("/v1/signup", auth.signup);
+app.post("/v1/logout", auth.signup);
 
 // TEST - session route
 app.get("/session", (req, res) => {

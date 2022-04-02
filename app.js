@@ -1,6 +1,7 @@
 // Voluntime app
 const fs = require("fs");
 const express = require("express");
+const cors = require("cors");
 const session = require("express-session");
 const MemoryStore = require("memorystore")(session);
 const PgSimple = require("connect-pg-simple")(session);
@@ -12,11 +13,11 @@ const interaction = require("./src/interaction");
 const post = require("./src/post");
 const user = require("./src/user");
 
-
 const initSql = fs.readFileSync("./db/schema.sql").toString();
 const port = process.env.PORT || 8080;
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(session({
     secret: "voluntime",

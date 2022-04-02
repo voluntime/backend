@@ -31,11 +31,10 @@ module.exports.login = (req, res) => {
             req.session.user = {
                 username
             };
+            const userData = result.rows[0];
+            delete userData.password;
 
-            res.json({
-                success: true,
-                'username': req.session.user
-            })
+            res.json(userData)
         }
     });
 };

@@ -31,8 +31,8 @@ app.use(session({
 }));
 
 // User routes
-app.get("/v1/users", user.getAllUsers);
-app.get("/v1/user/:username", user.getUser);
+app.get("/v1/users", authenticated, user.getAllUsers);
+app.get("/v1/user/:username", authenticated, user.getUser);
 
 // Post routes
 app.get("/v1/posts", authenticated, post.getAllPosts);

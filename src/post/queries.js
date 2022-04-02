@@ -5,7 +5,7 @@ const { pool } = require("../db");
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.getAllPosts = (req, res) => {
+module.exports.getAllPosts = (req, res, next) => {
     const {
         date,
         eventType,
@@ -44,7 +44,7 @@ module.exports.getAllPosts = (req, res) => {
     const query = bigBoiQuery + " where " +  filterQuery;
 
     pool.query(query, params, (err, result) => {
-        if (err) throw err;
+        if (err) next(err);
 
         res.send(result.rows);
     });
@@ -55,7 +55,7 @@ module.exports.getAllPosts = (req, res) => {
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.getPostById = (req, res) => {
+module.exports.getPostById = (req, res, next) => {
     res.send({ TODO: true });
 };
 
@@ -64,7 +64,7 @@ module.exports.getPostById = (req, res) => {
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.createPost = (req, res) => {
+module.exports.createPost = (req, res, next) => {
     let {
         organization,
         title,
@@ -94,7 +94,7 @@ module.exports.createPost = (req, res) => {
     ];
 
     pool.query("INSERT INTO POST(created, begins, ends, organizer, organization, title, body, event_location, event_type, goal) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *", params, (err, result) => {
-        if (err) throw err;
+        if (err) next(err);
 
         if (result.rowCount !== 1) {
             return res.status(500).json({
@@ -111,11 +111,11 @@ module.exports.createPost = (req, res) => {
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.deletePost = (req, res) => {
+module.exports.deletePost = (req, res, next) => {
     const { id } = req.body;
 
     pool.query("DELETE FROM POST WHERE ID = $1", [id], (err, result) => {
-       if (err) throw err;
+       if (err) next(err);
 
        res.send({
            success: true

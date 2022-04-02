@@ -7,11 +7,11 @@ const saltRounds = 10;
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
     const { username, password } = req.body;
 
     pool.query("SELECT PASSWORD FROM VOLUNTEER WHERE USERNAME = $1", [username], async (err, result) => {
-        if (err) throw err;
+        if (err) next(err);
 
         if (result.rows.length !== 1) {
             return res.status(401).json({
@@ -44,7 +44,7 @@ module.exports.login = (req, res) => {
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.logout = (req, res) => {
+module.exports.logout = (req, res, next) => {
     delete req.session.user;
     res.send({
         success: true
@@ -56,7 +56,7 @@ module.exports.logout = (req, res) => {
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.signup = async (req, res) => {
+module.exports.signup = async (req, res, next) => {
     const {
         username,
         name,
@@ -71,7 +71,7 @@ module.exports.signup = async (req, res) => {
     req.body.password = await bcrypt.hash(password, saltRounds);
 
     const cb = (err, result) => {
-        if (err) throw err;
+        if (err) next(err);
         delete req.body.password;
         res.status(201).json(req.body);
     };

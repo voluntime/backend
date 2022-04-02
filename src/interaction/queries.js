@@ -7,12 +7,12 @@ const interaction = (req, res, interactionTable) => {
     // Check if they liked it
     pool.query(`SELECT * FROM ${interactionTable} WHERE VOLUNTEER = $1 AND POST = $2`, [req.session.user.username, id], (err, result) => {
 
-        if (err) throw err;
+        if (err) next(err);
 
         if (result.rows.length === 0) {
             // They need to like it
             pool.query(`INSERT INTO ${interactionTable} VALUES ($1, $2)`, [req.session.user.username, id], (err, result) => {
-                if (err) throw err;
+                if (err) next(err);
 
                 // Good to go
                 res.status(202).json({
@@ -22,7 +22,7 @@ const interaction = (req, res, interactionTable) => {
         } else {
             // They don't wanna like it anymore
             pool.query(`DELETE FROM ${interactionTable} WHERE VOLUNTEER = $1 AND POST = $2`, [req.session.user.username, id], (err, result) => {
-                if (err) throw err;
+                if (err) next(err);
 
                 // Good to go
                 res.status(202).json({
@@ -38,7 +38,7 @@ const interaction = (req, res, interactionTable) => {
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.likePost = (req, res) => {
+module.exports.likePost = (req, res, next) => {
     interaction(req, res, "POST_LIKE");
 };
 
@@ -47,6 +47,6 @@ module.exports.likePost = (req, res) => {
  * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
  * @param res {Response<ResBody, Locals>}
  */
-module.exports.volunteer = (req, res) => {
+module.exports.volunteer = (req, res, next) => {
     interaction(req, res, "VOLUNTEERED");
 };

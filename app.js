@@ -54,7 +54,7 @@ app.post("/v1/signup", auth.signup);
 app.post("/v1/logout", authenticated, auth.signup);
 
 // TEST - session route
-app.get("/session", (req, res) => {
+app.get("/session", (req, res, next) => {
     if (req.session.views) {
        req.session.views++;
        res.send(req.session);
@@ -73,7 +73,7 @@ app.use((err, req, res, next) => {
 
 // Ensure all tables are loaded
 pool.query(initSql, (err, res) => {
-    if (err) throw err;
+    if (err) next(err);
 
     app.listen(port, () => {
         console.log("Listening on port " + port);

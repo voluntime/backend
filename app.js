@@ -30,13 +30,13 @@ app.get("/v1/users", user.getAllUsers);
 app.get("/v1/user/:username", user.getUser);
 
 // Interaction routes
-app.post("/v1/interaction/like", interaction.likePost);
-app.post("/v1/interaction/volunteer", interaction.volunteer);
+app.post("/v1/interaction/like", authenticated, interaction.likePost);
+app.post("/v1/interaction/volunteer", authenticated, interaction.volunteer);
 
 // Auth routes
 app.post("/v1/login", auth.login);
 app.post("/v1/signup", auth.signup);
-app.post("/v1/logout", auth.signup);
+app.post("/v1/logout", authenticated, auth.signup);
 
 // TEST - session route
 app.get("/session", (req, res) => {
@@ -52,7 +52,7 @@ app.get("/session", (req, res) => {
 // Global err catchall
 app.use((err, req, res, next) => {
     res.status(err.code || 500).send({
-        err: err.reason || "No reason given"
+        err: err.reason || err.toString()
     })
 });
 

@@ -62,8 +62,8 @@ create table if not exists event_type(
 );
 
 -- Insert enumerated types
-insert into event_type values('Service');
-insert into event_type values('Good');
+insert into event_type values('Service') on conflict do nothing;
+insert into event_type values('Good') on conflict do nothing;
 
 
 drop view if exists full_post;

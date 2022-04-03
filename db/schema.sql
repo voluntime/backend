@@ -6,7 +6,7 @@ create table if not exists volunteer(
     name            text not null,
     email           text not null unique,
     password        text not null,
-    zipcode         int not null,
+    zipcode         text not null,
     organization    text,
     verified        bool default false,
     bio             text,

@@ -1,7 +1,7 @@
 const { Request, Response } = require("express");
 const { pool } = require("../db");
 
-const interaction = (req, res, interactionTable) => {
+const interaction = (req, res, next, interactionTable) => {
     const { id } = req.body;
 
     // Check if they liked it
@@ -39,7 +39,7 @@ const interaction = (req, res, interactionTable) => {
  * @param res {Response<ResBody, Locals>}
  */
 module.exports.likePost = (req, res, next) => {
-    interaction(req, res, "POST_LIKE");
+    interaction(req, res, next, "POST_LIKE");
 };
 
 
@@ -48,5 +48,5 @@ module.exports.likePost = (req, res, next) => {
  * @param res {Response<ResBody, Locals>}
  */
 module.exports.volunteer = (req, res, next) => {
-    interaction(req, res, "VOLUNTEERED");
+    interaction(req, res, next, "VOLUNTEERED");
 };

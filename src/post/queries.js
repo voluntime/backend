@@ -16,7 +16,6 @@ module.exports.getAllPosts = (req, res, next) => {
     const my_username = req.session.user.username;
 
     let andFilters = [];
-    let orFilters = [];
     let params = [my_username];
 
     if (date) {
@@ -63,7 +62,7 @@ module.exports.getAllPosts = (req, res, next) => {
 
     const bigBoiQuery = "select p.*, v.volunteered, l.liked from ( select id, TRUE as liked from full_post fp where exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) union select id, FALSE as liked from full_post fp where not exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) ) l join ( select id, TRUE as volunteered from full_post fp where exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) union select id, FALSE as volunteered from full_post fp where not exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) ) v on l.id = v.id join full_post p on l.id = p.id";
 
-    const query = bigBoiQuery + " where " +  filterQuery;
+    const query = andFilters.length > 0 ? bigBoiQuery + " where " + filterQuery : bigBoiQuery;
 
     pool.query(query, params, (err, result) => {
         if (err) return next(err);

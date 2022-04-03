@@ -38,8 +38,7 @@ module.exports.getAllPosts = (req, res, next) => {
         andFilters[i] += id;
     }
 
-    // TODO REMOVE WHEN WE ARE DONE
-    // andFilters.push("p.begins > now()");
+    andFilters.push("p.begins > now()");
 
     // If the user is on the homepage, show the list of upcoming events they
     // are going to or organized

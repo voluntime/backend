@@ -72,6 +72,9 @@ app.post("/v1/interaction/volunteer", authenticated, interaction.volunteer);
 // Reputation route
 app.get("/v1/reputation/:username", authenticated, reputation.getReputation);
 
+// Verify attendance
+app.post("/v1/verifyAttendance", reputation.verifyAttendance);
+
 // Auth routes
 app.post("/v1/login", auth.login);
 app.post("/v1/signup", auth.signup);

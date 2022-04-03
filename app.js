@@ -39,8 +39,8 @@ app.use(session({
         createTableIfMissing: true
     }),
     cookie: cookieConfig, // cookie expires in 24hr
-    saveUninitialized: false,
-    resave: false
+    saveUninitialized: true,
+    resave: true
 }));
 
 // User routes

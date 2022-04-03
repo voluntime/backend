@@ -63,7 +63,9 @@ module.exports.getAllPosts = (req, res, next) => {
 
     const bigBoiQuery = "select p.*, v.volunteered, l.liked from ( select id, TRUE as liked from full_post fp where exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) union select id, FALSE as liked from full_post fp where not exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) ) l join ( select id, TRUE as volunteered from full_post fp where exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) union select id, FALSE as volunteered from full_post fp where not exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) ) v on l.id = v.id join full_post p on l.id = p.id";
 
-    const query = andFilters.length > 0 ? bigBoiQuery + " where " + filterQuery : bigBoiQuery;
+    let query = andFilters.length > 0 ? bigBoiQuery + " where " + filterQuery : bigBoiQuery;
+
+    query += " order by p.begins asc, p.ends desc";
 
     pool.query(query, params, (err, result) => {
         if (err) return next(err);

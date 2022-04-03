@@ -31,7 +31,15 @@ module.exports.login = (req, res, next) => {
             const userData = result.rows[0];
             delete userData.password;
             req.session.user = userData;
-            res.json(userData);
+            req.session.save((err) => {
+                if (!err) {
+                    res.json(userData);
+                } else {
+                    res.status(500).json({
+                        err: "Error saving session"
+                    });
+                }
+            });
         }
     });
 };

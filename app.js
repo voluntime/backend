@@ -26,7 +26,7 @@ app.use(cors({
 // Dev cookie config
 let cookieConfig = {
     maxAge: 86400000,
-    domain: ".voluntime.me",
+    domain: !!process.env.DATABASE_URL ? ".voluntime.me" : "localhost",
     secure: !!process.env.DATABASE_URL
 };
 
@@ -39,8 +39,8 @@ app.use(session({
         createTableIfMissing: true
     }),
     cookie: cookieConfig, // cookie expires in 24hr
-    saveUninitialized: true,
-    resave: true
+    saveUninitialized: false,
+    resave: false
 }));
 
 // User routes

@@ -19,7 +19,7 @@ const port = process.env.PORT || 8080;
 const app = express();
 
 app.use(cors({
-    origin: ["http://localhost:3000", "https://api.volunti.me", "https://volunti.me"],
+    origin: ["http://localhost", "https://api.volunti.me", "https://volunti.me"],
     credentials: true
 }));
 
@@ -32,8 +32,6 @@ let cookieConfig = {
 if (!!process.env.DATABASE_URL) {
     app.set("trust proxy", 1);
 }
-
-console.log(cookieConfig);
 
 app.use(express.json());
 app.use(session({

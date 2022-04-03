@@ -50,10 +50,13 @@ module.exports.login = (req, res, next) => {
  * @param res {Response<ResBody, Locals>}
  */
 module.exports.logout = (req, res, next) => {
-    delete req.session.user;
-    res.send({
-        success: true
-    });
+    req.session.destroy((err) => {
+        if (err) return next(err);
+
+        res.send({
+            success: true
+        });
+    })
 };
 
 
@@ -79,6 +82,7 @@ module.exports.signup = async (req, res, next) => {
         const cb = (err, result) => {
             if (err) return next(err);
             delete req.body.password;
+            req.session.user = req.body;
             res.status(201).json(req.body);
         };
 

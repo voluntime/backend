@@ -65,7 +65,7 @@ app.get("/v1/reputation/:username", authenticated, reputation.getReputation);
 // Auth routes
 app.post("/v1/login", auth.login);
 app.post("/v1/signup", auth.signup);
-app.post("/v1/logout", authenticated, auth.signup);
+app.post("/v1/logout", authenticated, auth.logout);
 
 // TEST - session route
 app.get("/session", (req, res, next) => {

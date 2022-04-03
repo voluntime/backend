@@ -11,6 +11,7 @@ const { authenticated } = require("./src/middleware");
 const auth = require("./src/auth");
 const interaction = require("./src/interaction");
 const post = require("./src/post");
+const reputation = require("./src/reputation");
 const user = require("./src/user");
 
 const initSql = fs.readFileSync("./db/schema.sql").toString();
@@ -47,6 +48,9 @@ app.delete("/v1/post", authenticated, post.deletePost);
 // Interaction routes
 app.post("/v1/interaction/like", authenticated, interaction.likePost);
 app.post("/v1/interaction/volunteer", authenticated, interaction.volunteer);
+
+// Reputation route
+app.get("/v1/reputation/:username", authenticated, reputation.getReputation);
 
 // Auth routes
 app.post("/v1/login", auth.login);

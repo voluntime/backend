@@ -1,5 +1,5 @@
-const { Request, Response } = require("express");
-const { pool } = require("../db");
+const {Request, Response} = require("express");
+const {pool} = require("../db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
@@ -8,7 +8,7 @@ const saltRounds = 10;
  * @param res {Response<ResBody, Locals>}
  */
 module.exports.login = (req, res, next) => {
-    const { username, password } = req.body;
+    const {username, password} = req.body;
 
     pool.query("SELECT PASSWORD FROM VOLUNTEER WHERE USERNAME = $1", [username], async (err, result) => {
         if (err) return next(err);
@@ -59,25 +59,28 @@ module.exports.logout = (req, res, next) => {
 module.exports.signup = async (req, res, next) => {
     const {
         username,
-        name,
         email,
         password,
-        zipcode,
-        organization,
-        bio
     } = req.body;
 
-    req.body.organization = req.body.organization || null;
-    req.body.password = await bcrypt.hash(password, saltRounds);
-
-    const cb = (err, result) => {
+    pool.query("SELECT * FROM VOLUNTEER WHERE USERNAME = $1 OR EMAIL = $2", [username, email], async (err, result) => {
         if (err) return next(err);
-        delete req.body.password;
-        res.status(201).json(req.body);
-    };
 
-    pool.query(`insert into volunteer(username, name, email, password, zipcode, organization, bio) values($1, $2, $3, $4, $5, $6, $7)`,
-        Object.values(req.body),
-        cb
-    )
+        if (result.rows.length > 0) return res.status(400).json({ err: "Username or email already exists" });
+
+        req.body.organization = req.body.organization || null;
+        req.body.password = await bcrypt.hash(password, saltRounds);
+
+        const cb = (err, result) => {
+            if (err) return next(err);
+            delete req.body.password;
+            res.status(201).json(req.body);
+        };
+
+        pool.query(`insert into volunteer(username, name, email, password, zipcode, organization, bio)
+                    values ($1, $2, $3, $4, $5, $6, $7)`,
+            Object.values(req.body),
+            cb
+        )
+    })
 };

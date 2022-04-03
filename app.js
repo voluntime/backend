@@ -18,6 +18,15 @@ const initSql = fs.readFileSync("./db/schema.sql").toString();
 const port = process.env.PORT || 8080;
 const app = express();
 
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        if (req.header('x-forwarded-proto') !== 'https')
+            res.redirect(`https://${req.header('host')}${req.url}`)
+        else
+            next()
+    })
+}
+
 app.use(cors({
     origin: ["http://localhost", "http://localhost:8080", "http://localhost:3000", "https://api.volunti.me", "https://volunti.me"],
     credentials: true

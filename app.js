@@ -19,7 +19,7 @@ const port = process.env.PORT || 8080;
 const app = express();
 
 app.use(cors({
-    origin: ["http://localhost", "https://api.volunti.me", "https://volunti.me"],
+    origin: ["http://localhost", "http://localhost:8080", "http://localhost:3000", "https://api.volunti.me", "https://volunti.me"],
     credentials: true
 }));
 

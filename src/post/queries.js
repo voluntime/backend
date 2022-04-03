@@ -10,42 +10,56 @@ module.exports.getAllPosts = (req, res, next) => {
         date,
         eventType,
         duration,
-        username,
+        profile,
     } = req.query;
 
-    let filters = [];
-    let params = [req.session.user.username];
+    const my_username = req.session.user.username;
+
+    let andFilters = [];
+    let orFilters = [];
+    let params = [my_username];
 
     if (date) {
-        filters.push("p.begins::date = $");
+        andFilters.push("p.begins::date = $");
         params.push(date);
     }
 
     if (eventType) {
-        filters.push("p.event_type = $");
+        andFilters.push("p.event_type = $");
         params.push(eventType);
     }
 
     if (duration) {
-        filters.push("p.ends - p.begins <= $");
+        andFilters.push("p.ends - p.begins <= $");
         params.push(duration);
     }
 
-
-
-    for (const i in filters) {
+    for (const i in andFilters) {
         const id = parseInt(i) + 2;
-        filters[i] += id;
+        andFilters[i] += id;
     }
 
-    filters.push("p.begins > now()");
+    andFilters.push("p.begins > now()");
 
-    if (username) {
-        // TODO FIX, SQL INJECTION sad
-        filters.push(`(p.organizer = ${username} or p.volunteered = 't')`);
+    // If the user is on the homepage, show the list of upcoming events they
+    // are going to or organized
+    // - p.organizer = me or volunteered = 't'
+
+    // (If organizer is not me)
+    // If we're looking at another user's profile, only show the list of their
+    // upcoming events
+    // -
+
+    if (profile) {
+        if (my_username === profile) {
+            // TODO FIX, SQL INJECTION sad
+            andFilters.push(`(p.organizer = '${profile}' or volunteered = 't' or liked = 't')`);
+        } else {
+            andFilters.push(`(p.organizer = '${profile}')`);
+        }
     }
 
-    let filterQuery = filters.join(" and ");
+    let filterQuery = andFilters.join(" and ");
 
     const bigBoiQuery = "select p.*, v.volunteered, l.liked from ( select id, TRUE as liked from full_post fp where exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) union select id, FALSE as liked from full_post fp where not exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) ) l join ( select id, TRUE as volunteered from full_post fp where exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) union select id, FALSE as volunteered from full_post fp where not exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) ) v on l.id = v.id join full_post p on l.id = p.id";
 

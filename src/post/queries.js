@@ -9,7 +9,8 @@ module.exports.getAllPosts = (req, res, next) => {
     const {
         date,
         eventType,
-        duration
+        duration,
+        username,
     } = req.query;
 
     let filters = [];
@@ -30,6 +31,8 @@ module.exports.getAllPosts = (req, res, next) => {
         params.push(duration);
     }
 
+
+
     for (const i in filters) {
         const id = parseInt(i) + 2;
         filters[i] += id;
@@ -37,7 +40,12 @@ module.exports.getAllPosts = (req, res, next) => {
 
     filters.push("p.begins > now()");
 
-    const filterQuery = filters.join(" and ");
+    if (username) {
+        // TODO FIX, SQL INJECTION sad
+        filters.push(`(p.organizer = ${username} or p.volunteered = 't')`);
+    }
+
+    let filterQuery = filters.join(" and ");
 
     const bigBoiQuery = "select p.*, v.volunteered, l.liked from ( select id, TRUE as liked from full_post fp where exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) union select id, FALSE as liked from full_post fp where not exists( select 1 from post_like where post = fp.id and post_like.volunteer = $1 ) ) l join ( select id, TRUE as volunteered from full_post fp where exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) union select id, FALSE as volunteered from full_post fp where not exists( select 1 from volunteered where post = fp.id and volunteered.volunteer = $1 ) ) v on l.id = v.id join full_post p on l.id = p.id";
 

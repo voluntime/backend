@@ -10,7 +10,7 @@ const saltRounds = 10;
 module.exports.login = (req, res, next) => {
     const {username, password} = req.body;
 
-    pool.query("SELECT PASSWORD FROM VOLUNTEER WHERE USERNAME = $1", [username], async (err, result) => {
+    pool.query("SELECT * FROM VOLUNTEER WHERE USERNAME = $1", [username], async (err, result) => {
         if (err) return next(err);
 
         if (result.rows.length !== 1) {
@@ -28,13 +28,10 @@ module.exports.login = (req, res, next) => {
                 err: "Incorrect username or password"
             });
         } else {
-            req.session.user = {
-                username
-            };
             const userData = result.rows[0];
             delete userData.password;
-
-            res.json(userData)
+            req.session.user = userData;
+            res.json(userData);
         }
     });
 };

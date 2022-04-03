@@ -25,14 +25,10 @@ app.use(cors({
 
 // Dev cookie config
 let cookieConfig = {
-    maxAge: 86400000
+    maxAge: 86400000,
+    domain: ".voluntime.me",
+    secure: !!process.env.DATABASE_URL
 };
-
-// We're in prod
-if (process.env.DATABASE_URL) {
-    cookieConfig.domain = ".voluntime.me";
-    cookieConfig.secure = true;
-}
 
 app.use(express.json());
 app.use(session({

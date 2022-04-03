@@ -26,7 +26,7 @@ app.use(cors({
 // Dev cookie config
 let cookieConfig = {
     maxAge: 86400000,
-    domain: !!process.env.DATABASE_URL ? "http://localhost:3000" : "http://localhost:3000",
+    domain: !!process.env.DATABASE_URL ? ".volunti.me" : "localhost",
 };
 
 if (!!process.env.DATABASE_URL) {

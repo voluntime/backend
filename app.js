@@ -23,6 +23,17 @@ app.use(cors({
     credentials: true
 }));
 
+// Dev cookie config
+let cookieConfig = {
+    maxAge: 86400000
+};
+
+// We're in prod
+if (process.env.DATABASE_URL) {
+    cookieConfig.domain = ".voluntime.me";
+    cookieConfig.secure = true;
+}
+
 app.use(express.json());
 app.use(session({
     secret: "voluntime",
@@ -31,7 +42,7 @@ app.use(session({
         pool,
         createTableIfMissing: true
     }),
-    cookie: { maxAge: 86400000 }, // cookie expires in 24hr
+    cookie: cookieConfig, // cookie expires in 24hr
     saveUninitialized: false,
     resave: false
 }));

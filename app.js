@@ -27,8 +27,13 @@ app.use(cors({
 let cookieConfig = {
     maxAge: 86400000,
     domain: !!process.env.DATABASE_URL ? ".volunti.me" : "localhost",
-    secure: !!process.env.DATABASE_URL
 };
+
+if (!!process.env.DATABASE_URL) {
+    app.set("trust proxy", 1);
+}
+
+console.log(cookieConfig);
 
 app.use(express.json());
 app.use(session({

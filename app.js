@@ -18,12 +18,12 @@ const reputation = require("./src/reputation");
 const user = require("./src/user");
 
 const initSql = fs.readFileSync("./db/schema.sql").toString();
-const port = process.env.PORT || 8080;
 const app = express();
 
-const IS_PROD = process.env.NODE_ENV === "production";
-const COOKIE_DOMAIN = IS_PROD ? ".volunti.me" : "localhost";
-const CORS_ORIGIN = IS_PROD ? "https://api.volunti.me" : "http://localhost:3000"
+const port = process.env.PORT || 8080;
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || "localhost";
+const COOKIE_SECRET  = process.env.COOKIE_SECRET || "voluntime";
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000"
 
 app.use(cors({
     origin: CORS_ORIGIN,
@@ -43,7 +43,7 @@ if (IS_PROD) {
 app.use(express.json());
 
 app.use(session({
-    secret: "voluntime",
+    secret: COOKIE_SECRET,
     name: "sess_id",
     store: new PgSimple({
         pool,

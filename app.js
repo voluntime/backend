@@ -6,6 +6,9 @@ const session = require("express-session");
 const MemoryStore = require("memorystore")(session);
 const PgSimple = require("connect-pg-simple")(session);
 
+// Import .env
+require("dotenv").config();
+
 const { pool } = require("./src/db");
 const { authenticated } = require("./src/middleware");
 const auth = require("./src/auth");
@@ -18,32 +21,27 @@ const initSql = fs.readFileSync("./db/schema.sql").toString();
 const port = process.env.PORT || 8080;
 const app = express();
 
+const IS_PROD = process.env.NODE_ENV === "production";
+const COOKIE_DOMAIN = IS_PROD ? ".volunti.me" : "localhost";
+const CORS_ORIGIN = IS_PROD ? "https://api.volunti.me" : "http://localhost:3000"
 
 app.use(cors({
-    origin: ["http://localhost", "http://localhost:8080", "http://localhost:3000", "https://api.volunti.me", "https://volunti.me"],
+    origin: CORS_ORIGIN,
     credentials: true
 }));
 
-// if (process.env.NODE_ENV === 'production') {
-//     app.use((req, res, next) => {
-//         if (req.header('x-forwarded-proto') !== 'https')
-//             res.redirect(`https://${req.header('host')}${req.url}`)
-//         else
-//             next()
-//     })
-// }
-
 // Dev cookie config
-let cookieConfig = {
+const cookieConfig = {
     maxAge: 86400000,
-    domain: !!process.env.DATABASE_URL ? ".volunti.me" : "localhost",
+    domain: COOKIE_DOMAIN,
 };
 
-if (!!process.env.DATABASE_URL) {
+if (IS_PROD) {
     app.set("trust proxy", 1);
 }
 
 app.use(express.json());
+
 app.use(session({
     secret: "voluntime",
     name: "sess_id",

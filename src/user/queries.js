@@ -20,7 +20,7 @@ module.exports.getAllUsers = (req, res, next) => {
 module.exports.getUser = (req, res, next) => {
     const username = req.params.username || "";
 
-    pool.query("SELECT V.*, COUNT(VD.FUFILLED) AS REPUTATION FROM VOLUNTEER V JOIN VOLUNTEERED VD ON V.USERNAME = VD.VOLUNTEER WHERE USERNAME = $1 GROUP BY V.USERNAME", [username], (err, result) => {
+    pool.query("SELECT V.*, COUNT(VD.FUFILLED) AS REPUTATION FROM VOLUNTEER V LEFT OUTER JOIN VOLUNTEERED VD ON V.USERNAME = VD.VOLUNTEER WHERE USERNAME = $1 GROUP BY V.USERNAME", [username], (err, result) => {
 
         if (err) return next(err);
 

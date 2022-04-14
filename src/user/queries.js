@@ -33,6 +33,7 @@ module.exports.getUser = (req, res, next) => {
         const user = result.rows[0];
 
         delete user.password;
+        user.reputation = parseInt(user.reputation);
 
         // set reputation to be in range of 0-3
         if (user.reputation > 1 && user.reputation < 5) {

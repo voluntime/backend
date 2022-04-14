@@ -66,6 +66,8 @@ app.post("/v1/interaction/volunteer", authenticated, interaction.volunteer);
 
 // Verify attendance
 app.post("/v1/verifyAttendance", authenticated, attendance.verifyAttendance);
+app.get("/v1/volunteers/:postid", authenticated, attendance.volunteers);
+
 
 // Auth routes
 app.post("/v1/login", auth.login);

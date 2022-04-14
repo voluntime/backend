@@ -13,7 +13,7 @@ const { authenticated } = require("./src/middleware");
 const auth = require("./src/auth");
 const interaction = require("./src/interaction");
 const post = require("./src/post");
-const reputation = require("./src/reputation");
+const attendance = require("./src/attendance");
 const user = require("./src/user");
 
 const initSql = fs.readFileSync("./db/schema.sql").toString();
@@ -65,7 +65,7 @@ app.post("/v1/interaction/like", authenticated, interaction.likePost);
 app.post("/v1/interaction/volunteer", authenticated, interaction.volunteer);
 
 // Verify attendance
-app.post("/v1/verifyAttendance", authenticated, reputation.verifyAttendance);
+app.post("/v1/verifyAttendance", authenticated, attendance.verifyAttendance);
 
 // Auth routes
 app.post("/v1/login", auth.login);

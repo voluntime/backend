@@ -26,8 +26,9 @@ module.exports.verifyAttendance = (req, res, next) => {
  */
 module.exports.volunteers = (req, res, next) => {
     const postId = req.params.postid || "";
-    console.log(postId);
-    pool.query("SELECT FP.ID, FP.TITLE, VD.*, V.NAME, V.EMAIL FROM FULL_POST FP JOIN VOLUNTEERED VD ON FP.ID = VD.POST JOIN VOLUNTEER V ON VD.VOLUNTEER = V.USERNAME WHERE FP.ID = $1 order by name;", [postId], (err, result) => {
+    const username = req.session.user.username || "";
+
+    pool.query("SELECT FP.ID, FP.TITLE, VD.*, V.NAME, V.EMAIL FROM FULL_POST FP JOIN VOLUNTEERED VD ON FP.ID = VD.POST JOIN VOLUNTEER V ON VD.VOLUNTEER = V.USERNAME WHERE FP.ID = $1 AND FP.ORGANIZER = $2 order by name;", [postId, username], (err, result) => {
         if (err) return next(err);
 
         return res.json(result.rows);

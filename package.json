@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The backend for the Voluntime app.",
   "main": "app.js",
-  "repository": "https://gitlab.com/c4458/Team3",
+  "repository": "https://github.com/voluntime/backend",
   "author": "Voluntime",
   "license": "MIT",
   "private": true,

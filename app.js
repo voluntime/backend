@@ -3,7 +3,6 @@ const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
-const MemoryStore = require("memorystore")(session);
 const PgSimple = require("connect-pg-simple")(session);
 
 // Import .env
@@ -65,11 +64,8 @@ app.delete("/v1/post", authenticated, post.deletePost);
 app.post("/v1/interaction/like", authenticated, interaction.likePost);
 app.post("/v1/interaction/volunteer", authenticated, interaction.volunteer);
 
-// Reputation route
-app.get("/v1/reputation/:username", authenticated, reputation.getReputation);
-
 // Verify attendance
-app.post("/v1/verifyAttendance", reputation.verifyAttendance);
+app.post("/v1/verifyAttendance", authenticated, reputation.verifyAttendance);
 
 // Auth routes
 app.post("/v1/login", auth.login);
